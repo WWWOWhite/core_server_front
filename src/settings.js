@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: 'Vue Admin Template',
+  title: '细粒度多层级身份认证软件',
 
   /**
    * @type {boolean} true | false

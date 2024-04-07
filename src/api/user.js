@@ -1,5 +1,13 @@
 import request from '@/utils/request'
 
+export function userQuery(params) {
+  return request({
+    url: '/user-query',
+    method: 'post',
+    data: params
+  })
+}
+
 export function login(data) {
   return request({
     url: '/vue-admin-template/user/login',
