@@ -55,7 +55,7 @@
       >登 录</el-button>
     </el-form>
 
-    <div class="info" style="bottom: 40px;">版本号: 0.1.0_beta</div>
+    <div class="info" style="bottom: 40px;">版本号: 0.1.0</div>
     <div class="info">开发团队: SEU 319</div>
   </div>
 </template>

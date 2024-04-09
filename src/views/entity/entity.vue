@@ -48,7 +48,7 @@
           width="100"
         >
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="handleDelete(scope.row)">撤销</el-button>
+            <el-button type="danger" icon="el-icon-delete" circle @click="handleDelete(scope.row)" />
           </template>
         </el-table-column>
       </el-table>

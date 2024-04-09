@@ -39,7 +39,7 @@
           width="100"
         >
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="handleUpdate(scope.row)">编辑</el-button>
+            <el-button type="primary" icon="el-icon-edit" circle @click="handleUpdate(scope.row)" />
           </template>
         </el-table-column>
       </el-table>

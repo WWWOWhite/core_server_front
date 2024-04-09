@@ -7,7 +7,7 @@ const data = Mock.mock({
     user_id: '@string("lower", 8)',
     software_name: '@ctitle(4, 6)',
     software_hash: '@string("lower", 32)',
-    'software_desc|1': '@cparagraph(1, 10)',
+    'software_desc|1': '@cparagraph(20, 50)',
     create_time: '@datetime',
     update_time: '@datetime'
   }]

@@ -60,13 +60,21 @@ export const constantRoutes = [
   {
     path: '/user',
     component: Layout,
+    redirect: '/user/manage',
     name: '用户管理',
+    meta: { title: '用户管理', icon: 'user' },
     children: [
       {
         path: 'manage',
-        name: '用户管理',
+        name: '用户信息管理',
         component: () => import('@/views/user/user'),
-        meta: { title: '用户管理', icon: 'user' }
+        meta: { title: '用户信息管理', icon: 'el-icon-document' }
+      },
+      {
+        path: 'review',
+        name: '用户资质审核',
+        component: () => import('@/views/user/review'),
+        meta: { title: '用户资质审核', icon: 'el-icon-document-checked' }
       }
     ]
   },
@@ -74,7 +82,7 @@ export const constantRoutes = [
   {
     path: '/node',
     component: Layout,
-    name: '节点管理',
+    // name: '节点管理',
     children: [
       {
         path: 'manage',
@@ -88,7 +96,7 @@ export const constantRoutes = [
   {
     path: '/entity',
     component: Layout,
-    name: '认证实体管理',
+    // name: '认证实体管理',
     children: [
       {
         path: 'manage',
@@ -102,37 +110,45 @@ export const constantRoutes = [
   {
     path: '/software',
     component: Layout,
+    redirect: '/software/manage',
     name: '软件管理',
+    meta: { title: '软件管理', icon: 'el-icon-suitcase' },
     children: [
       {
         path: 'manage',
-        name: '软件管理',
+        name: '软件信息管理',
         component: () => import('@/views/software/software'),
-        meta: { title: '软件管理', icon: 'el-icon-suitcase' }
+        meta: { title: '软件信息管理', icon: 'el-icon-receiving' }
+      },
+      {
+        path: 'review',
+        name: '软件注册审核',
+        component: () => import('@/views/user/user'),
+        meta: { title: '软件注册审核', icon: 'el-icon-document-checked' }
       }
     ]
   },
 
   // {
-  //   path: "/example",
+  //   path: '/example',
   //   component: Layout,
-  //   redirect: "/example/table",
-  //   name: "Example",
-  //   meta: { title: "Example", icon: "el-icon-s-help" },
+  //   redirect: '/example/table',
+  //   name: 'Example',
+  //   meta: { title: 'Example', icon: 'el-icon-s-help' },
   //   children: [
   //     {
-  //       path: "table",
-  //       name: "Table",
-  //       component: () => import("@/views/table/index"),
-  //       meta: { title: "Table", icon: "table" },
+  //       path: 'table',
+  //       name: 'Table',
+  //       component: () => import('@/views/table/index'),
+  //       meta: { title: 'Table', icon: 'table' }
   //     },
   //     {
-  //       path: "tree",
-  //       name: "Tree",
-  //       component: () => import("@/views/tree/index"),
-  //       meta: { title: "Tree", icon: "tree" },
-  //     },
-  //   ],
+  //       path: 'tree',
+  //       name: 'Tree',
+  //       component: () => import('@/views/tree/index'),
+  //       meta: { title: 'Tree', icon: 'tree' }
+  //     }
+  //   ]
   // },
 
   // {
