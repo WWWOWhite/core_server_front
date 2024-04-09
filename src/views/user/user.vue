@@ -44,14 +44,42 @@
           align="center"
           fixed="right"
           label="操作"
-          width="100"
+          width="200"
         >
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="handleUpdate(scope.row)">编辑</el-button>
-            <el-button type="text" size="small" @click="handleDelete(scope.row)">注销</el-button>
+            <el-button type="primary" icon="el-icon-edit" circle @click="handleEdit(scope.row)" />
+            <el-button type="danger" icon="el-icon-delete" circle @click="handleDelete(scope.row)" />
           </template>
         </el-table-column>
       </el-table>
+
+      <el-drawer
+        ref="drawer"
+        :title="`您正在编辑用户 ${editedUser.user_name} 的详细信息...`"
+        :before-close="handleDrawerClose"
+        :visible.sync="drawerVisible"
+        direction="ltr"
+        custom-class="info-drawer"
+      >
+        <div class="info-drawer__content">
+          <el-form :model="editedUser">
+            <el-form-item label="用户ID" :label-width="formLabelWidth">
+              <el-input v-model="editedUser.user_id" autocomplete="off" disabled />
+            </el-form-item>
+          </el-form>
+          <div class="info-drawer__footer">
+            <el-button @click="cancelForm">取 消</el-button>
+            <el-button
+              type="primary"
+              :loading="drawerLoading"
+              @click="$refs.drawer.closeDrawer()"
+            >
+              {{ drawerLoading ? '提交中 ...' : '提 交' }}
+            </el-button>
+          </div>
+        </div>
+      </el-drawer>
+
       <div class="pagination-container">
         <el-pagination
           :current-page="currentPage"
@@ -68,12 +96,16 @@
 </template>
 
 <script>
-import { userQuery } from '@/api/user'
+import { userUpdate, userDelete, userQuery } from '@/api/user'
 
 export default {
   data() {
     return {
+      formLabelWidth: '80px',
+      drawerVisible: false,
+      editedUser: {},
       list: null,
+      drawerLoading: false,
       listLoading: true,
       currentPage: 1,
       pageSize: 10,
@@ -85,6 +117,60 @@ export default {
     this.getData()
   },
   methods: {
+    handleEdit(row) {
+      this.editedUser = { ...row }
+      this.drawerVisible = true
+    },
+    handleUpdate() {
+      userUpdate(this.editedUser.user_id, this.editedUser)
+        .then(response => {
+          if (response.data.status === 'success') {
+            this.drawerVisible = false
+            this.getData()
+            this.$message.success('更新用户成功！')
+          } else {
+            this.$message.error('更新用户失败！')
+          }
+        })
+        .catch(() => {
+          this.$message.error('更新用户失败，请稍后再试！')
+        })
+    },
+    handleDrawerClose(done) {
+      if (this.drawerLoading) {
+        return
+      }
+      this.$confirm('确定要提交表单吗？')
+        .then(_ => {
+          this.drawerLoading = true
+          this.drawerTimer = setTimeout(() => {
+            done()
+            setTimeout(() => {
+              this.drawerLoading = false
+            }, 200)
+          }, 1000)
+        })
+        .catch(_ => {})
+    },
+    cancelForm() {
+      this.drawerLoading = false
+      this.drawerVisible = false
+      clearTimeout(this.drawerTimer)
+    },
+    handleDelete(row) {
+      userDelete(row.user_id)
+        .then(response => {
+          if (response.data.status === 'success') {
+            this.getData()
+            this.$message.success('删除用户成功！')
+          } else {
+            this.$message.error('删除用户失败！')
+          }
+        })
+        .catch(() => {
+          this.$message.error('删除用户失败，请稍后再试！')
+        })
+    },
     handleSizeChange(val) {
       this.pageSize = val
       this.currentPage = 1
