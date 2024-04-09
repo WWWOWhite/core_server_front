@@ -23,14 +23,27 @@
             <span>{{ scope.row.software_name }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="软件哈希值">
-          <template slot-scope="scope">{{ scope.row.software_hash }}</template>
+        <el-table-column align="center" label="软件哈希">
+          <template slot-scope="scope">
+            <el-tooltip class="description-tooltip" effect="dark" :content="scope.row.software_hash" :popper-options="{ boundariesElement: 'window' }" placement="top-start" :open-delay="500">
+              <el-button
+                type="primary"
+                size="small"
+                icon="el-icon-document-copy"
+                @click="copyText(scope.row.software_hash)"
+              >复制</el-button>
+            </el-tooltip>
+          </template>
         </el-table-column>
         <el-table-column align="center" label="软件描述">
           <template slot-scope="scope">
-            <el-tooltip class="description-tooltip" effect="dark" :content="scope.row.software_desc" :popper-options="{ boundariesElement: 'window' }" placement="top">
-              <div class="description">{{ scope.row.software_desc.substring(0, 10) }}...</div>
-            </el-tooltip>
+            <el-button
+              type="info"
+              size="small"
+              icon="el-icon-info"
+              @click="openDialog(scope.row.software_name, scope.row.software_desc)"
+            >详情
+            </el-button>
           </template>
         </el-table-column>
         <el-table-column align="center" prop="created_at" label="创建时间" width="200">
@@ -49,14 +62,25 @@
           align="center"
           fixed="right"
           label="操作"
-          width="100"
+          width="200"
         >
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="handleUpdate(scope.row)">编辑</el-button>
-            <el-button type="text" size="small" @click="handleDelete(scope.row)">撤销</el-button>
+            <el-button type="primary" icon="el-icon-edit" circle @click="handleUpdate(scope.row)" />
+            <el-button type="danger" icon="el-icon-delete" circle @click="handleDelete(scope.row)" />
           </template>
         </el-table-column>
       </el-table>
+      <el-dialog
+        :title="`${dialogSoftwareName}的详细信息`"
+        :visible.sync="dialogVisible"
+        width="30%"
+        :before-close="handleDialogClose"
+      >
+        <span>{{ dialogSoftwareDesc }}</span>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">关闭</el-button>
+        </span>
+      </el-dialog>
       <div class="pagination-container">
         <el-pagination
           :current-page="currentPage"
@@ -78,6 +102,9 @@ import { softwareQuery } from '@/api/software'
 export default {
   data() {
     return {
+      dialogSoftwareName: '',
+      dialogSoftwareDesc: '',
+      dialogVisible: false,
       list: null,
       listLoading: true,
       currentPage: 1,
@@ -90,6 +117,27 @@ export default {
     this.getData()
   },
   methods: {
+    copyText(text) {
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          this.$message.success('已复制此软件哈希！')
+        })
+        .catch(() => {
+          this.$message.error('复制失败，请手动复制文本。')
+        })
+    },
+    openDialog(softwareName, softwareDesc) {
+      this.dialogSoftwareName = softwareName
+      this.dialogSoftwareDesc = softwareDesc
+      this.dialogVisible = true
+    },
+    handleDialogClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done()
+        })
+        .catch(_ => {})
+    },
     handleSizeChange(val) {
       this.pageSize = val
       this.currentPage = 1
@@ -123,13 +171,6 @@ export default {
   justify-content: center;
   align-items: center;
   margin-top: 1%;
-}
-
-.description {
-width: 100px; /* 设置固定宽度 */
-white-space: nowrap; /* 不换行 */
-overflow: hidden; /* 超出部分隐藏 */
-text-overflow: ellipsis; /* 超出部分显示省略号 */
 }
 
 .description-tooltip {
