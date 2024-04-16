@@ -9,33 +9,34 @@
         fit
         highlight-current-row
       >
+        <el-table-column align="center" prop="id" width="50" label="序号" />
         <el-table-column align="center" label="认证实体ID" width="130">
           <template slot-scope="scope">{{ scope.row.entity_index }}</template>
         </el-table-column>
-        <el-table-column align="center" label="进程PID" width="95">
+        <el-table-column align="center" label="进程PID" width="80">
           <template slot-scope="scope">{{ scope.row.entity_pid }}</template>
         </el-table-column>
-        <el-table-column align="center" label="所属软件ID">
+        <el-table-column align="center" label="所属软件ID" width="130">
           <template slot-scope="scope">{{ scope.row.software_id }}</template>
         </el-table-column>
-        <el-table-column align="center" label="所属用户ID">
+        <el-table-column align="center" label="所属用户ID" width="130">
           <template slot-scope="scope">{{ scope.row.user_id }}</template>
         </el-table-column>
-        <el-table-column align="center" label="所属节点ID">
+        <el-table-column align="center" label="所属节点ID" width="130">
           <template slot-scope="scope">{{ scope.row.node_id }}</template>
         </el-table-column>
-        <el-table-column class-name="status-col" label="进程活跃状态" width="110" align="center">
+        <el-table-column class-name="status-col" label="活跃状态" width="95" align="center">
           <template slot-scope="scope">
             <el-tag :type="scope.row.is_alive | statusFilter">{{ scope.row.is_alive }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="created_at" label="创建时间" width="200">
+        <el-table-column align="center" prop="created_time" label="创建时间">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.create_time }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="update_at" label="更新时间" width="200">
+        <el-table-column align="center" prop="update_time" label="更新时间">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.update_time }}</span>
@@ -45,7 +46,7 @@
           align="center"
           fixed="right"
           label="操作"
-          width="100"
+          width="150"
         >
           <template slot-scope="scope">
             <el-button type="danger" icon="el-icon-delete" circle @click="handleDelete(scope.row)" />
@@ -68,7 +69,7 @@
 </template>
 
 <script>
-import { entityQuery } from '@/api/entity'
+import { entityQuery, entityWithdraw } from '@/api/entity'
 
 export default {
   filters: {
@@ -94,6 +95,28 @@ export default {
     this.getData()
   },
   methods: {
+    handleDelete(row) {
+      this.$confirm('确定要撤销该认证实体吗？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          entityWithdraw(row.entity_index)
+            .then(response => {
+              if (response.data.status === 'success') {
+                this.getData()
+                this.$message.success('撤销认证实体成功！')
+              } else {
+                this.$message.error('撤销认证实体失败！')
+              }
+            })
+            .catch(() => {
+              this.$message.error('撤销认证实体失败，请稍后再试！')
+            })
+        })
+        .catch(() => { })
+    },
     handleSizeChange(val) {
       this.pageSize = val
       this.currentPage = 1
@@ -112,6 +135,15 @@ export default {
       entityQuery(params).then((response) => {
         this.list = response.data.items
         this.total = response.data.total
+
+        const startId = (this.currentPage - 1) * this.pageSize + 1
+        this.list = this.list.map((item, index) => {
+          return {
+            id: startId + index,
+            ...item
+          }
+        })
+
         this.listLoading = false
       }).catch((err) => {
         console.error(err)
@@ -121,7 +153,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .pagination-container {
   display: flex;
   justify-content: center;
