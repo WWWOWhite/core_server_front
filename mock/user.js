@@ -65,6 +65,24 @@ module.exports = [
       }
     }
   },
+  {
+    url: '/registered-user-query',
+    type: 'post',
+    response: config => {
+      const { page, limit } = config.body
+      const startIndex = (page - 1) * limit
+      const endIndex = startIndex + limit
+      const items = data.items.slice(startIndex, endIndex)
+      const total = data.items.length
+      return {
+        code: 20000,
+        data: {
+          total: total,
+          items: items
+        }
+      }
+    }
+  },
 
   // user login
   {

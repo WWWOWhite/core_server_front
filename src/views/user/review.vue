@@ -9,6 +9,7 @@
         fit
         highlight-current-row
       >
+        <el-table-column align="center" prop="id" width="50" label="序号" />
         <el-table-column align="center" label="用户ID" width="130">
           <template slot-scope="scope">{{ scope.row.user_id }}</template>
         </el-table-column>
@@ -28,13 +29,13 @@
         <el-table-column align="center" label="用户手机号">
           <template slot-scope="scope">{{ scope.row.user_phone }}</template>
         </el-table-column>
-        <el-table-column align="center" prop="created_at" label="创建时间" width="200">
+        <el-table-column align="center" prop="created_time" label="创建时间">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.create_time }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="update_at" label="更新时间" width="200">
+        <el-table-column align="center" prop="update_time" label="更新时间">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.update_time }}</span>
@@ -47,8 +48,8 @@
           width="200"
         >
           <template slot-scope="scope">
-            <el-button type="success" icon="el-icon-check" circle @click="handleCheck(scope.row)" />
-            <el-button type="danger" icon="el-icon-close" circle @click="handleClose(scope.row)" />
+            <el-button type="success" icon="el-icon-check" circle @click="handleApprove(scope.row)" />
+            <el-button type="danger" icon="el-icon-close" circle @click="handleDisapprove(scope.row)" />
           </template>
         </el-table-column>
       </el-table>
@@ -68,7 +69,7 @@
 </template>
 
 <script>
-import { userQuery } from '@/api/user'
+import { AppliedUserQuery, userApplyReview } from '@/api/user'
 
 export default {
   data() {
@@ -85,6 +86,34 @@ export default {
     this.getData()
   },
   methods: {
+    handleApprove(row) {
+      userApplyReview(row.user_id, true)
+        .then(response => {
+          if (response.data.status === 'success') {
+            this.getData()
+            this.$message.success(`用户${row.user_name}的审批通过！`)
+          } else {
+            this.$message.error('用户审批失败！')
+          }
+        })
+        .catch(() => {
+          this.$message.error('用户审批失败，请稍后再试！')
+        })
+    },
+    handleDisapprove(row) {
+      userApplyReview(row.user_id, false)
+        .then(response => {
+          if (response.data.status === 'success') {
+            this.getData()
+            this.$message.success(`用户${row.user_name}的审批不通过！`)
+          } else {
+            this.$message.error('用户审批失败！')
+          }
+        })
+        .catch(() => {
+          this.$message.error('用户审批失败，请稍后再试！')
+        })
+    },
     handleSizeChange(val) {
       this.pageSize = val
       this.currentPage = 1
@@ -100,9 +129,18 @@ export default {
         page: this.currentPage,
         limit: this.pageSize
       }
-      userQuery(params).then((response) => {
+      AppliedUserQuery(params).then((response) => {
         this.list = response.data.items
         this.total = response.data.total
+
+        const startId = (this.currentPage - 1) * this.pageSize + 1
+        this.list = this.list.map((item, index) => {
+          return {
+            id: startId + index,
+            ...item
+          }
+        })
+
         this.listLoading = false
       }).catch((err) => {
         console.error(err)
@@ -112,7 +150,7 @@ export default {
 }
 </script>
 
-  <style lang="scss">
+  <style lang="scss" scoped>
   .pagination-container {
     display: flex;
     justify-content: center;
