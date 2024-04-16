@@ -138,7 +138,7 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/software/manage',
     name: '软件管理',
-    meta: { title: '软件管理', icon: 'el-icon-suitcase', roles: ['admin', 'editor'] },
+    meta: { title: '软件管理', icon: 'el-icon-suitcase', roles: ['admin'] },
     children: [
       {
         path: 'manage',
@@ -147,16 +147,24 @@ export const asyncRoutes = [
         meta: { title: '软件信息管理', icon: 'el-icon-document', roles: ['admin'] }
       },
       {
-        path: 'register',
-        name: '软件注册',
-        component: () => import('@/views/software/register'),
-        meta: { title: '软件注册', icon: 'el-icon-suitcase', roles: ['editor'] }
-      },
-      {
         path: 'review',
         name: '软件注册审核',
         component: () => import('@/views/software/review'),
         meta: { title: '软件注册审核', icon: 'el-icon-document-checked', roles: ['admin'] }
+      }
+    ]
+  },
+
+  {
+    path: '/sw',
+    component: Layout,
+    redirect: '/main',
+    children: [
+      {
+        path: 'register',
+        name: '软件注册',
+        component: () => import('@/views/software/register'),
+        meta: { title: '软件注册', icon: 'el-icon-suitcase', roles: ['editor'] }
       }
     ]
   },
