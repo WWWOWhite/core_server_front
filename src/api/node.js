@@ -8,10 +8,12 @@ export function nodeQuery(params) {
   })
 }
 
-export function nodeUpdate(params) {
+export function nodeUpdate(nodeId, editedNode) {
   return request({
-    url: '/node-update',
+    url: `/node-update/${nodeId}`,
     method: 'post',
-    data: params
+    data: {
+      update_form: editedNode
+    }
   })
 }

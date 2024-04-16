@@ -6,13 +6,15 @@ const table = require('./table')
 const node = require('./node')
 const entity = require('./entity')
 const software = require('./software')
+const rsoftware = require('./rsoftware')
 
 const mocks = [
   ...user,
   ...table,
   ...node,
   ...entity,
-  ...software
+  ...software,
+  ...rsoftware
 ]
 
 // for front mock

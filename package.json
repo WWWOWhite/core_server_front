@@ -1,6 +1,6 @@
 {
   "name": "vue-auth-system",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "细粒度多层级身份认证软件",
   "author": "Pan <panfree23@gmail.com>, SEU 319",
   "scripts": {
