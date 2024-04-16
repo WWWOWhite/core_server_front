@@ -36,13 +36,6 @@ export const constantRoutes = [
     component: () => import('@/views/login/index'),
     hidden: true
   },
-
-  {
-    path: '/404',
-    component: () => import('@/views/404'),
-    hidden: true
-  },
-
   {
     path: '/',
     component: Layout,
@@ -56,25 +49,49 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/404',
+    component: () => import('@/views/404'),
+    hidden: true
+  }
+]
 
+const createRouter = () =>
+  new Router({
+    // mode: 'history', // require service support
+    scrollBehavior: () => ({ y: 0 }),
+    routes: constantRoutes
+  })
+
+const router = createRouter()
+
+// Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
+export function resetRouter() {
+  const newRouter = createRouter()
+  router.matcher = newRouter.matcher // reset router
+}
+
+export default router
+
+export const asyncRoutes = [
   {
     path: '/user',
     component: Layout,
     redirect: '/user/manage',
     name: '用户管理',
-    meta: { title: '用户管理', icon: 'user' },
+    meta: { title: '用户管理', icon: 'user', roles: ['admin'] },
     children: [
       {
         path: 'manage',
         name: '用户信息管理',
         component: () => import('@/views/user/user'),
-        meta: { title: '用户信息管理', icon: 'el-icon-document' }
+        meta: { title: '用户信息管理', icon: 'el-icon-document', roles: ['admin'] }
       },
       {
         path: 'review',
         name: '用户资质审核',
         component: () => import('@/views/user/review'),
-        meta: { title: '用户资质审核', icon: 'el-icon-document-checked' }
+        meta: { title: '用户资质审核', icon: 'el-icon-document-checked', roles: ['admin'] }
       }
     ]
   },
@@ -82,13 +99,14 @@ export const constantRoutes = [
   {
     path: '/node',
     component: Layout,
+    redirect: '/main',
     // name: '节点管理',
     children: [
       {
         path: 'manage',
         name: '节点管理',
         component: () => import('@/views/node/node'),
-        meta: { title: '节点管理', icon: 'el-icon-monitor' }
+        meta: { title: '节点管理', icon: 'el-icon-monitor', roles: ['admin'] }
       }
     ]
   },
@@ -96,13 +114,21 @@ export const constantRoutes = [
   {
     path: '/entity',
     component: Layout,
-    // name: '认证实体管理',
+    redirect: '/entity/manage',
+    name: '认证实体管理',
+    meta: { title: '认证实体管理', icon: 'el-icon-coordinate', roles: ['admin'] },
     children: [
       {
         path: 'manage',
-        name: '认证实体管理',
+        name: '实体信息管理',
         component: () => import('@/views/entity/entity'),
-        meta: { title: '认证实体管理', icon: 'el-icon-coordinate' }
+        meta: { title: '实体信息管理', icon: 'el-icon-document', roles: ['admin'] }
+      },
+      {
+        path: 'distribute',
+        name: '认证参数下发',
+        component: () => import('@/views/entity/distribute'),
+        meta: { title: '认证参数下发', icon: 'el-icon-bottom-right', roles: ['admin'] }
       }
     ]
   },
@@ -112,19 +138,25 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/software/manage',
     name: '软件管理',
-    meta: { title: '软件管理', icon: 'el-icon-suitcase' },
+    meta: { title: '软件管理', icon: 'el-icon-suitcase', roles: ['admin', 'editor'] },
     children: [
       {
         path: 'manage',
         name: '软件信息管理',
         component: () => import('@/views/software/software'),
-        meta: { title: '软件信息管理', icon: 'el-icon-receiving' }
+        meta: { title: '软件信息管理', icon: 'el-icon-document', roles: ['admin'] }
+      },
+      {
+        path: 'register',
+        name: '软件注册',
+        component: () => import('@/views/software/register'),
+        meta: { title: '软件注册', icon: 'el-icon-suitcase', roles: ['editor'] }
       },
       {
         path: 'review',
         name: '软件注册审核',
-        component: () => import('@/views/user/user'),
-        meta: { title: '软件注册审核', icon: 'el-icon-document-checked' }
+        component: () => import('@/views/software/review'),
+        meta: { title: '软件注册审核', icon: 'el-icon-document-checked', roles: ['admin'] }
       }
     ]
   },
@@ -228,20 +260,3 @@ export const constantRoutes = [
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
-
-const createRouter = () =>
-  new Router({
-    // mode: 'history', // require service support
-    scrollBehavior: () => ({ y: 0 }),
-    routes: constantRoutes
-  })
-
-const router = createRouter()
-
-// Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
-export function resetRouter() {
-  const newRouter = createRouter()
-  router.matcher = newRouter.matcher // reset router
-}
-
-export default router

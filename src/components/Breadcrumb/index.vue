@@ -32,26 +32,26 @@ export default {
   methods: {
     getBreadcrumb() {
       // only show routes with meta.title
-      let matched = this.$route.matched.filter(
+      const matched = this.$route.matched.filter(
         (item) => item.meta && item.meta.title
       )
-      const first = matched[0]
-
-      if (!this.isMainPage(first)) {
-        matched = [{ path: '/main', meta: { title: '首页' }}].concat(matched)
-      }
+      // const first = matched[0]
+      //
+      // if (!this.isMainPage(first)) {
+      //   matched = [{ path: '/main', meta: { title: '首页' }}].concat(matched)
+      // }
 
       this.levelList = matched.filter(
         (item) => item.meta && item.meta.title && item.meta.breadcrumb !== false
       )
     },
-    isMainPage(route) {
-      const name = route && route.name
-      if (!name) {
-        return false
-      }
-      return name.trim().toLocaleLowerCase() === 'main'.toLocaleLowerCase()
-    },
+    // isMainPage(route) {
+    //   const name = route && route.name
+    //   if (!name) {
+    //     return false
+    //   }
+    //   return name.trim().toLocaleLowerCase() === 'main'.toLocaleLowerCase()
+    // },
     pathCompile(path) {
       // To solve this problem https://github.com/PanJiaChen/vue-element-admin/issues/561
       const { params } = this.$route
