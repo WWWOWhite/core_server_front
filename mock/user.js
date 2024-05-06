@@ -41,7 +41,7 @@ const users = {
   'editor-token': {
     roles: ['editor'],
     introduction: 'I am an editor',
-    avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+    avatar: 'https://upload.shejihz.com/2019/03/fe2ec2e7ed7f6795b46b793d93c99b7e.jpg',
     name: '软件开发人员'
   }
 }

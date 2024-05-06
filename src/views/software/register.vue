@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="app-container">
     <el-form ref="softwareForm" :model="formData" label-width="120px">
       <!-- 第一行 -->
       <el-form-item>
@@ -110,6 +110,10 @@ export default {
 </script>
 
 <style scoped>
+.softwareForm {
+
+}
+
 .form-label {
   font-weight: 500;
 }
