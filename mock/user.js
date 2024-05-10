@@ -1,5 +1,7 @@
 const Mock = require('mockjs')
 
+const MODULE_BASE_URL = '/usermanage'
+
 const tokens = {
   admin: {
     token: 'admin-token'
@@ -48,7 +50,7 @@ const users = {
 
 module.exports = [
   {
-    url: '/user-query',
+    url: `${MODULE_BASE_URL}/user-query-all`,
     type: 'post',
     response: config => {
       const { page, limit } = config.body
@@ -66,7 +68,7 @@ module.exports = [
     }
   },
   {
-    url: '/registered-user-query',
+    url: `${MODULE_BASE_URL}/registered-user-query-all`,
     type: 'post',
     response: config => {
       const { page, limit } = config.body
@@ -86,7 +88,7 @@ module.exports = [
 
   // user login
   {
-    url: '/user-login',
+    url: `${MODULE_BASE_URL}/user-login`,
     type: 'post',
     response: config => {
       const { username } = config.body
@@ -109,8 +111,8 @@ module.exports = [
 
   // get user info
   {
-    url: '/user-info\.*',
-    type: 'get',
+    url: `${MODULE_BASE_URL}/user-info\.*`,
+    type: 'post',
     response: config => {
       const { token } = config.query
       const info = users[token]
@@ -132,7 +134,7 @@ module.exports = [
 
   // user logout
   {
-    url: '/user-logout',
+    url: `${MODULE_BASE_URL}/user-logout`,
     type: 'post',
     response: _ => {
       return {

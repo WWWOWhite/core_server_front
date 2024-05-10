@@ -1,19 +1,19 @@
 import request from '@/utils/request'
 
+const MODULE_BASE_URL = '/nodemanage'
+
 export function nodeQuery(params) {
   return request({
-    url: '/node-query',
+    url: `${MODULE_BASE_URL}/node-query-all`,
     method: 'post',
     data: params
   })
 }
 
-export function nodeUpdate(nodeId, editedNode) {
+export function nodeUpdate(editedNode) {
   return request({
-    url: `/node-update/${nodeId}`,
+    url: `${MODULE_BASE_URL}/node-update/`,
     method: 'post',
-    data: {
-      update_form: editedNode
-    }
+    data: editedNode
   })
 }

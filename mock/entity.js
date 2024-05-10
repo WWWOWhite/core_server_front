@@ -1,5 +1,7 @@
 const Mock = require('mockjs')
 
+const MODULE_BASE_URL = '/entitymanage'
+
 const data = Mock.mock({
   'items|100': [{
     entity_index: '@string("lower", 8)',
@@ -15,7 +17,7 @@ const data = Mock.mock({
 
 module.exports = [
   {
-    url: '/entity-query',
+    url: `${MODULE_BASE_URL}/entity-query-all`,
     type: 'post',
     response: config => {
       const { page, limit } = config.body

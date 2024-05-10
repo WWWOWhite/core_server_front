@@ -181,8 +181,8 @@ export default {
           this.drawerLoading = true
           this.drawerTimer = setTimeout(() => {
             // eslint-disable-next-line no-unused-vars
-            const { user_id, ...updateForm } = this.editedUser
-            userUpdate(this.editedUser.user_id, updateForm)
+            // const { user_id, ...updateForm } = this.editedUser
+            userUpdate(this.editedUser)
               .then(response => {
                 if (response.data.status === 'success') {
                   this.getData()

@@ -1,5 +1,7 @@
 const Mock = require('mockjs')
 
+const MODULE_BASE_URL = '/softwaremanage'
+
 const data = Mock.mock({
   'items|100': [{
     rsoftware_id: '@string("lower", 8)',
@@ -15,7 +17,7 @@ const data = Mock.mock({
 
 module.exports = [
   {
-    url: '/registered-software-query',
+    url: `${MODULE_BASE_URL}/registered-software-query-all`,
     type: 'post',
     response: config => {
       const { page, limit } = config.body

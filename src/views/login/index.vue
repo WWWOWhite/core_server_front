@@ -59,63 +59,31 @@
         </div>
       </el-form>
 
-      <div class="info" style="bottom: 40px;">版本号: 0.1.3</div>
-      <div class="info">开发团队: SEU 319</div>
+      <div class="info">
+        <span>版本号: 0.1.4</span>
+        <span>开发团队: SEU 319</span>
+      </div>
     </div>
 
-    <el-drawer
-      class="info-drawer"
-      title="正在为您申请用户资质..."
-      :before-close="handleDrawerClose"
-      :visible.sync="drawerVisible"
-      direction="rtl"
-      custom-class="info-drawer"
-    >
-      <div class="info-drawer__content">
-        <el-form :model="editedUser" label-position="left">
-          <el-form-item label="用户名" :label-width="formLabelWidth" required>
-            <el-input v-model="editedUser.user_name" placeholder="请输入您想使用的用户名..." />
-          </el-form-item>
-          <el-form-item label="用户密码" :label-width="formLabelWidth" required>
-            <el-input v-model="editedUser.user_password" placeholder="请输入您的密码..." show-password />
-          </el-form-item>
-          <el-form-item label="重复密码" :label-width="formLabelWidth" required>
-            <el-input v-model="editedUser.user_password_repeat" placeholder="请再次输入您的密码..." show-password />
-          </el-form-item>
-          <el-form-item label="所属组织" :label-width="formLabelWidth" required>
-            <el-input v-model="editedUser.user_role" placeholder="请再次输入您所在的公司或组织..." />
-          </el-form-item>
-          <el-form-item label="用户邮箱" :label-width="formLabelWidth">
-            <el-input v-model="editedUser.user_email" placeholder="请输入您想使用的邮箱..." />
-          </el-form-item>
-          <el-form-item label="用户手机号" :label-width="formLabelWidth">
-            <el-input v-model="editedUser.user_phone" placeholder="请输入您的手机号..." />
-          </el-form-item>
-        </el-form>
-        <div class="info-drawer__footer">
-          <el-button @click="handleDrawerClose">取 消</el-button>
-          <el-button
-            type="primary"
-            :loading="drawerLoading"
-            @click="handleDrawerSubmit"
-          >
-            {{ drawerLoading ? '提交中 ...' : '提 交' }}
-          </el-button>
-        </div>
-      </div></el-drawer>
+    <user-apply ref="Apply" />
+
   </div>
 </template>
 
 <script>
 import { validUsername } from '@/utils/validate'
-import { userApply } from '@/api/user'
+import Apply from './apply'
 
 export default {
   name: 'Login',
+  components: {
+    'user-apply': Apply
+  },
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
-        callback(new Error('（Mock）请输入用户名: admin / editor'))
+        // callback(new Error('（Mock）请输入用户名: admin / editor'))
+        callback(new Error('（Mock）请输入用户名'))
       } else {
         callback()
       }
@@ -140,11 +108,6 @@ export default {
           { required: true, trigger: 'blur', validator: validatePassword }
         ]
       },
-      formLabelWidth: '100px',
-      drawerLoading: false,
-      drawerVisible: false,
-      drawerTitle: '',
-      editedUser: {},
       loading: false,
       passwordType: 'password',
       redirect: undefined
@@ -189,67 +152,9 @@ export default {
       })
     },
     handleApply() {
-      this.editedUser = {}
-      this.drawerVisible = true
-    },
-    drawerReset() {
-      this.drawerLoading = false
-      this.drawerTitle = ''
-      clearTimeout(this.drawerTimer)
-      this.drawerVisible = false
-    },
-    handleDrawerClose(done) {
-      this.$confirm('', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        message:
-        `<div style="white-space: pre-wrap">确认关闭表单吗？<br><span style="color: red;">注意：</span>此操作将放弃当前所有更改！</div>`,
-        dangerouslyUseHTMLString: true
-      })
-        .then(_ => {
-          this.drawerReset()
-          done()
-        })
-        .catch(_ => {})
-    },
-    handleDrawerSubmit() {
-      if (this.drawerLoading) {
-        return
+      if (this.$refs.Apply) {
+        this.$refs.Apply.handleApply()
       }
-      this.$confirm('确定要提交表单吗？', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
-        .then(() => {
-          this.drawerLoading = true
-          this.drawerTimer = setTimeout(() => {
-            // eslint-disable-next-line no-unused-vars
-            const { user_password_repeat, ...updateForm } = this.editedUser
-            if (user_password_repeat !== this.editedUser.user_password) {
-              return
-            }
-            userApply(this.editedUser.user_id, updateForm)
-              .then(response => {
-                if (response.data.status === 'success') {
-                  this.getData()
-                  this.$message.success('用户资质申请成功！')
-                } else {
-                  this.$message.error('用户资质申请失败！')
-                }
-
-                setTimeout(() => {
-                  this.drawerReset()
-                }, 200)
-              })
-              .catch(() => {
-                this.$message.error('用户资质申请失败，请稍后再试！')
-                this.drawerReset()
-              })
-          }, 1000)
-        })
-        .catch(() => {})
     }
   }
 }
@@ -260,10 +165,14 @@ export default {
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 .info {
   position: fixed;
-  bottom: 20px;
+  bottom: 40px;
   width: 100%;
   text-align: center;
   color: gainsboro;
+}
+
+.info span {
+  display: block;
 }
 
 $bg: #283443;
@@ -325,23 +234,6 @@ $light_gray: #eee;
   color: $light_gray;
   margin-bottom: 10px;
   display: inline-block;
-}
-
-.info-drawer__content {
-  padding: 20px;
-  height: 90%;
-  overflow-y: auto;
-}
-
-.info-drawer__footer {
-  padding: 20px;
-  display: flex;
-  justify-content: space-between, flex-end;
-}
-
-.info-drawer__footer .el-button:first-child {
-  margin-left: auto;
-  margin-right: 2%;
 }
 
 .login-container {

@@ -124,7 +124,7 @@ export default {
         .catch(_ => {})
     },
     handleApprove(row) {
-      softwareRegistrationReview(row.software_id, true)
+      softwareRegistrationReview(row.rsoftware_id, true)
         .then(response => {
           if (response.data.status === 'success') {
             this.getData()
@@ -139,7 +139,7 @@ export default {
         })
     },
     handleDisapprove(row) {
-      softwareRegistrationReview(row.software_id, false)
+      softwareRegistrationReview(row.rsoftware_id, false)
         .then(response => {
           if (response.data.status === 'success') {
             this.getData()

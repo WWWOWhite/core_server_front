@@ -1,15 +1,21 @@
 import request from '@/utils/request'
 
-export function softwareRegistrationReview(softwareId, isApproved) {
+const MODULE_BASE_URL = '/softwaremanage'
+
+export function softwareRegistrationReview(rsoftwareId, isApproved) {
   return request({
-    url: `/approve-software-register/${softwareId}/${isApproved}`,
-    method: 'post'
+    url: `${MODULE_BASE_URL}/approve-software-register/${rsoftwareId}/${isApproved}`,
+    method: 'post',
+    data: {
+      rsoftware_id: rsoftwareId,
+      is_approved: isApproved
+    }
   })
 }
 
 export function RegisteredSoftwareQuery(params) {
   return request({
-    url: '/registered-software-query',
+    url: `${MODULE_BASE_URL}/registered-software-query-all`,
     method: 'post',
     data: params
   })
@@ -17,18 +23,16 @@ export function RegisteredSoftwareQuery(params) {
 
 export function softwareQuery(params) {
   return request({
-    url: '/software-query',
+    url: `${MODULE_BASE_URL}/software-query-all`,
     method: 'post',
     data: params
   })
 }
 
-export function softwareUpdate(softwareId, editedSoftware) {
+export function softwareUpdate(editedSoftware) {
   return request({
-    url: `/update-software/${softwareId}`,
+    url: `${MODULE_BASE_URL}/update-software/`,
     method: 'post',
-    data: {
-      update_form: editedSoftware
-    }
+    data: editedSoftware
   })
 }

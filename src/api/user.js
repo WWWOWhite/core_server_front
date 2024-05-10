@@ -1,8 +1,10 @@
 import request from '@/utils/request'
 
+const MODULE_BASE_URL = '/usermanage'
+
 export function login(data) {
   return request({
-    url: '/user-login',
+    url: `${MODULE_BASE_URL}/user-login/`,
     method: 'post',
     data
   })
@@ -10,22 +12,22 @@ export function login(data) {
 
 export function getInfo(token) {
   return request({
-    url: '/user-info',
-    method: 'get',
+    url: `${MODULE_BASE_URL}/user-info/`,
+    method: 'post',
     params: { token }
   })
 }
 
 export function logout() {
   return request({
-    url: '/user-logout',
+    url: `${MODULE_BASE_URL}/user-logout`,
     method: 'post'
   })
 }
 
 export function userApply(userId, user) {
   return request({
-    url: `/user-register/${userId}`,
+    url: `${MODULE_BASE_URL}/user-register/${userId}`,
     method: 'post',
     data: {
       register_form: user
@@ -35,31 +37,36 @@ export function userApply(userId, user) {
 
 export function userApplyReview(userId, isApproved) {
   return request({
-    url: `/approve-register/${userId}/${isApproved}`,
-    method: 'post'
+    url: `${MODULE_BASE_URL}/approve-register/`,
+    method: 'post',
+    data: {
+      user_id: userId,
+      is_approved: isApproved
+    }
   })
 }
 
 export function userDelete(userId) {
   return request({
-    url: `/delete-user/${userId}`,
-    method: 'post'
+    url: `${MODULE_BASE_URL}/delete-user/`,
+    method: 'post',
+    data: {
+      user_id: userId
+    }
   })
 }
 
-export function userUpdate(userId, editedUser) {
+export function userUpdate(editedUser) {
   return request({
-    url: `/update-user/${userId}`,
+    url: `${MODULE_BASE_URL}/update-user/`,
     method: 'post',
-    data: {
-      update_form: editedUser
-    }
+    data: editedUser
   })
 }
 
 export function AppliedUserQuery(params) {
   return request({
-    url: '/registered-user-query',
+    url: `${MODULE_BASE_URL}/registered-user-query-all`,
     method: 'post',
     data: params
   })
@@ -67,7 +74,7 @@ export function AppliedUserQuery(params) {
 
 export function userQuery(params) {
   return request({
-    url: '/user-query',
+    url: `${MODULE_BASE_URL}/user-query-all`,
     method: 'post',
     data: params
   })
