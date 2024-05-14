@@ -19,9 +19,9 @@
           <el-form-item label="重复密码" :label-width="formLabelWidth" required>
             <el-input v-model="editedUser.user_pwd_repeat" placeholder="请再次输入您的密码..." show-password />
           </el-form-item>
-          <el-form-item label="所属组织" :label-width="formLabelWidth" required>
+          <!-- <el-form-item label="所属组织" :label-width="formLabelWidth" required>
             <el-input v-model="editedUser.user_role" placeholder="请再次输入您所在的公司或组织..." />
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="用户邮箱" :label-width="formLabelWidth">
             <el-input v-model="editedUser.user_email" placeholder="请输入您想使用的邮箱..." />
           </el-form-item>
@@ -100,7 +100,7 @@ export default {
             if (user_pwd_repeat !== this.editedUser.user_pwd) {
               return
             }
-            userApply(this.editedUser.user_id, updateForm)
+            userApply(updateForm)
               .then(response => {
                 if (response.data.status === 'success') {
                   this.getData()

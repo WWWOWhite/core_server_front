@@ -25,13 +25,11 @@ export function logout() {
   })
 }
 
-export function userApply(userId, user) {
+export function userApply(user) {
   return request({
-    url: `${MODULE_BASE_URL}/user-register/${userId}`,
+    url: `${MODULE_BASE_URL}/user-register/`,
     method: 'post',
-    data: {
-      register_form: user
-    }
+    data: user
   })
 }
 
