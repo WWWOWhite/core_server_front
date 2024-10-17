@@ -22,29 +22,27 @@
             <span class="form-label">软件描述：</span>
             <el-input v-model="formData.rsoftware_desc" placeholder="软件描述" style="width: 200px;" />
           </el-col>
-          <el-col :span="11" :offset="1">
-            <span class="form-label">软件部署路径：</span>
-            <el-input v-model="formData.rsoftware_path" placeholder="软件部署路径" style="width: 200px;" />
-          </el-col>
         </el-row>
       </el-form-item>
 
       <!-- 表格 -->
       <el-form-item label="部署信息">
         <el-table :data="formData.location_data" style="width: 100%">
+        <!--
           <el-table-column label="部署节点">
             <template slot-scope="scope">
-              <!-- <el-select v-model="scope.row.node" placeholder="请选择" style="width: 100%;" class="form-select"> -->
-              <!-- <el-option label="节点1" value="节点1" />
+               <el-select v-model="scope.row.node" placeholder="请选择" style="width: 100%;" class="form-select">
+               <el-option label="节点1" value="节点1" />
                 <el-option label="节点2" value="节点2" />
-                <el-option label="节点3" value="节点3" /> -->
-              <el-input v-model="scope.row.node_ip" placeholder="部署节点" />
-              <!-- </el-select> -->
+                <el-option label="节点3" value="节点3" /> 
+                <el-input v-model="scope.row.node_ip" placeholder="部署节点" />
+              </el-select> 
             </template>
           </el-table-column>
+        --> 
           <el-table-column label="部署实体">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.entity_ip" placeholder="部署实体" />
+              <el-input v-model="scope.row.entity_ip" placeholder="部署实体IP" style="width: 400px;" />
             </template>
           </el-table-column>
           <template slot="append">
@@ -76,6 +74,7 @@
 
 <script>
 import { softwareRegister } from '@/api/software'
+import { getToken } from '@/utils/auth'
 
 export default {
   data() {
@@ -84,7 +83,7 @@ export default {
         rsoftware_name: '',
         rsoftware_version: '',
         rsoftware_desc: '',
-        rsoftware_path: '',
+        user_id: '',
         location_data: [{ node_ip: '', entity_ip: '' }]
       },
       successDialogVisible: false
@@ -109,10 +108,15 @@ export default {
       this.$refs['softwareForm'].resetFields()
     },
     handleSoftwareRegister() {
+      const user_id = getToken()
+      if (user_id === '') {
+        this.$message.error('用户id获取失败！')
+        return
+      }
+      this.formData.user_id = user_id
       softwareRegister(this.formData)
         .then(response => {
-          if (response.data.status === 'success') {
-            this.getData()
+          if (response.status === 'success') {
             this.$message.success(`软件${this.formData.rsoftware_name}的注册成功！`)
             // 后端计算软件哈希并存入数据库SoftwareTable
           } else {

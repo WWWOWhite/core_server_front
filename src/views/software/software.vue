@@ -14,7 +14,7 @@
           <template slot-scope="scope">{{ scope.row.software_id }}</template>
         </el-table-column>
         <el-table-column align="center" label="软件版本" width="80">
-          <template slot-scope="scope">V{{ scope.row.software_version }}</template>
+          <template slot-scope="scope">{{ scope.row.software_version }}</template>
         </el-table-column>
         <el-table-column align="center" label="发布用户ID" width="130">
           <template slot-scope="scope">{{ scope.row.user_id }}</template>
@@ -97,6 +97,9 @@
             <el-form-item label="软件ID" :label-width="formLabelWidth" required>
               <el-input v-model="editedSoftware.software_id" readonly disabled />
             </el-form-item>
+            <el-form-item label="软件版本" :label-width="formLabelWidth" required>
+              <el-input v-model="editedSoftware.software_version" />
+            </el-form-item>
             <el-form-item label="发布用户ID" :label-width="formLabelWidth" required>
               <el-input v-model="editedSoftware.user_id" readonly disabled />
             </el-form-item>
@@ -139,7 +142,7 @@
 </template>
 
 <script>
-import { softwareQuery, softwareUpdate } from '@/api/software'
+import { softwareQuery, softwareUpdate, softwarDelete } from '@/api/software'
 
 export default {
   data() {
@@ -181,7 +184,7 @@ export default {
           this.$message.success(`已复制${softwareName}的哈希！`)
         })
         .catch(() => {
-          this.$message.error('复制失败，请手动复制文本。')
+          this.$message.error('复制失败，请手动复制文本！')
         })
     },
     openDialog(softwareName, softwareDesc) {
@@ -201,6 +204,28 @@ export default {
       const { id, create_time, update_time, ...restFields } = row
       this.editedSoftware = { ...restFields }
       this.drawerVisible = true
+    },
+    handleDelete(row) {
+      this.$confirm('确定要删除该软件吗？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          softwarDelete(row.software_id)
+            .then(response => {
+              if (response.status === 'success') {
+                this.getData()
+                this.$message.success('删除软件成功！')
+              } else {
+                this.$message.error('认证服务器处理出错，删除软件失败！')
+              }
+            })
+            .catch(() => {
+              this.$message.error('删除软件失败，请稍后再试！')
+            })
+        })
+        .catch(() => { })
     },
     drawerReset() {
       this.drawerLoading = false
@@ -240,11 +265,11 @@ export default {
             // const { software_id, user_id, software_hash, ...updateForm } = this.editedSoftware
             softwareUpdate(updateForm)
               .then(response => {
-                if (response.data.status === 'success') {
+                if (response.status === 'success') {
                   this.getData()
                   this.$message.success('更新软件信息成功！')
                 } else {
-                  this.$message.error('更新软件信息失败！')
+                  this.$message.error('认证服务器处理出错，更新软件信息失败！')
                 }
 
                 setTimeout(() => {
@@ -275,8 +300,8 @@ export default {
         limit: this.pageSize
       }
       softwareQuery(params).then((response) => {
-        this.list = response.data.items
-        this.total = response.data.total
+        this.list = response.message.data
+        this.total = response.message.num
 
         const startId = (this.currentPage - 1) * this.pageSize + 1
         this.list = this.list.map((item, index) => {
@@ -288,7 +313,7 @@ export default {
 
         this.listLoading = false
       }).catch((err) => {
-        console.error(err)
+        this.$message.error(err)
       })
     }
   }

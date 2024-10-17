@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: '细粒度多层级身份认证软件',
+  title: 'DDS访问控制管理系统',
 
   /**
    * @type {boolean} true | false

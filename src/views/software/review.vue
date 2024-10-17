@@ -44,12 +44,14 @@
             <span>{{ scope.row.create_time }}</span>
           </template>
         </el-table-column>
+        <!-- 
         <el-table-column align="center" prop="update_time" label="更新时间">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.update_time }}</span>
           </template>
         </el-table-column>
+        -->
         <el-table-column
           align="center"
           fixed="right"
@@ -126,30 +128,30 @@ export default {
     handleApprove(row) {
       softwareRegistrationReview(row.rsoftware_id, true)
         .then(response => {
-          if (response.data.status === 'success') {
+          if (response.status === 'success') {
             this.getData()
-            this.$message.success(`软件${row.software_name}的审批通过！`)
+            this.$message.success(`已通过软件${row.rsoftware_name}的审批！`)
             // 后端计算软件哈希并存入数据库SoftwareTable
           } else {
-            this.$message.error('软件审批失败！')
+            this.$message.error('认证服务器处理出错，操作失败！')
           }
         })
         .catch(() => {
-          this.$message.error('软件审批失败，请稍后再试！')
+          this.$message.error('操作失败，请检查部署路径或稍后再试！')
         })
     },
     handleDisapprove(row) {
       softwareRegistrationReview(row.rsoftware_id, false)
         .then(response => {
-          if (response.data.status === 'success') {
+          if (response.status === 'success') {
             this.getData()
-            this.$message.success(`软件${row.software_name}的审批不通过！`)
+            this.$message.success(`已拒绝软件${row.rsoftware_name}的审批！`)
           } else {
-            this.$message.error('软件审批失败！')
+            this.$message.error('认证服务器处理出错，操作失败！')
           }
         })
         .catch(() => {
-          this.$message.error('软件审批失败，请稍后再试！')
+          this.$message.error('操作失败，请检查部署路径或稍后再试！')
         })
     },
     handleSizeChange(val) {
@@ -168,8 +170,8 @@ export default {
         limit: this.pageSize
       }
       RegisteredSoftwareQuery(params).then((response) => {
-        this.list = response.data.items
-        this.total = response.data.total
+        this.list = response.message.data
+        this.total = response.message.num
 
         const startId = (this.currentPage - 1) * this.pageSize + 1
         this.list = this.list.map((item, index) => {

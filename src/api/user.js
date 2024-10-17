@@ -14,13 +14,14 @@ export function getInfo(token) {
   return request({
     url: `${MODULE_BASE_URL}/user-info/`,
     method: 'post',
-    params: { token }
+    // params: { token }
+    data: { user_id: token }
   })
 }
 
 export function logout() {
   return request({
-    url: `${MODULE_BASE_URL}/user-logout`,
+    url: `${MODULE_BASE_URL}/user-logout/`,
     method: 'post'
   })
 }
@@ -56,7 +57,7 @@ export function userDelete(userId) {
 
 export function userUpdate(editedUser) {
   return request({
-    url: `${MODULE_BASE_URL}/update-user/`,
+    url: `${MODULE_BASE_URL}/user-update/`,
     method: 'post',
     data: editedUser
   })
@@ -64,7 +65,7 @@ export function userUpdate(editedUser) {
 
 export function AppliedUserQuery(params) {
   return request({
-    url: `${MODULE_BASE_URL}/registered-user-query-all`,
+    url: `${MODULE_BASE_URL}/registered-user-query-all/`,
     method: 'post',
     data: params
   })
@@ -72,7 +73,7 @@ export function AppliedUserQuery(params) {
 
 export function userQuery(params) {
   return request({
-    url: `${MODULE_BASE_URL}/user-query-all`,
+    url: `${MODULE_BASE_URL}/user-query-all/`,
     method: 'post',
     data: params
   })

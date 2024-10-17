@@ -20,7 +20,7 @@
         </el-table-column>
         <el-table-column label="用户角色" width="130" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.user_role }}</span>
+            <span>{{ scope.row.user_row }}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="用户邮箱">
@@ -71,7 +71,7 @@
               <el-input v-model="editedUser.user_name" />
             </el-form-item>
             <el-form-item label="用户角色" :label-width="formLabelWidth" required>
-              <el-input v-model="editedUser.user_role" />
+              <el-input v-model="editedUser.user_row" />
             </el-form-item>
             <el-form-item label="用户邮箱" :label-width="formLabelWidth">
               <el-input v-model="editedUser.user_email" />
@@ -184,11 +184,11 @@ export default {
             // const { user_id, ...updateForm } = this.editedUser
             userUpdate(this.editedUser)
               .then(response => {
-                if (response.data.status === 'success') {
+                if (response.status === 'success') {
                   this.getData()
                   this.$message.success('更新用户信息成功！')
                 } else {
-                  this.$message.error('更新用户信息失败！')
+                  this.$message.error('认证服务器处理出错，更新用户信息失败！')
                 }
 
                 setTimeout(() => {
@@ -212,11 +212,11 @@ export default {
         .then(() => {
           userDelete(row.user_id)
             .then(response => {
-              if (response.data.status === 'success') {
+              if (response.status === 'success') {
                 this.getData()
                 this.$message.success('删除用户成功！')
               } else {
-                this.$message.error('删除用户失败！')
+                this.$message.error('认证服务器处理出错，删除用户失败！')
               }
             })
             .catch(() => {
@@ -241,9 +241,8 @@ export default {
         limit: this.pageSize
       }
       userQuery(params).then((response) => {
-        this.list = response.data.items
-        this.total = response.data.total
-
+        this.list = response.message.data
+        this.total = response.message.num
         const startId = (this.currentPage - 1) * this.pageSize + 1
         this.list = this.list.map((item, index) => {
           return {

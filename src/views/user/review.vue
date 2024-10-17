@@ -20,7 +20,7 @@
         </el-table-column>
         <el-table-column label="用户角色" width="130" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.user_role }}</span>
+            <span>{{ scope.row.user_row }}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="用户邮箱">
@@ -89,11 +89,11 @@ export default {
     handleApprove(row) {
       userApplyReview(row.user_id, true)
         .then(response => {
-          if (response.data.status === 'success') {
+          if (response.status === 'success') {
             this.getData()
             this.$message.success(`用户${row.user_name}的审批通过！`)
           } else {
-            this.$message.error('用户审批失败！')
+            this.$message.error('认证服务器处理出错，用户审批失败！')
           }
         })
         .catch(() => {
@@ -103,11 +103,11 @@ export default {
     handleDisapprove(row) {
       userApplyReview(row.user_id, false)
         .then(response => {
-          if (response.data.status === 'success') {
+          if (response.status === 'success') {
             this.getData()
             this.$message.success(`用户${row.user_name}的审批不通过！`)
           } else {
-            this.$message.error('用户审批失败！')
+            this.$message.error('认证服务器处理出错，用户审批失败！')
           }
         })
         .catch(() => {
@@ -130,8 +130,8 @@ export default {
         limit: this.pageSize
       }
       AppliedUserQuery(params).then((response) => {
-        this.list = response.data.items
-        this.total = response.data.total
+        this.list = response.message.data
+        this.total = response.message.num
 
         const startId = (this.currentPage - 1) * this.pageSize + 1
         this.list = this.list.map((item, index) => {

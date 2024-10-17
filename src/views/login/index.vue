@@ -10,7 +10,7 @@
         label-position="left"
       >
         <div class="title-container">
-          <h3 class="title">细粒度多层级身份认证软件</h3>
+          <h3 class="title">DDS访问控制管理系统</h3>
         </div>
 
         <el-form-item prop="username">
@@ -60,8 +60,8 @@
       </el-form>
 
       <div class="info">
-        <span>版本号: 0.1.4</span>
-        <span>开发团队: SEU 319</span>
+        <span>版本号: 0.0.1</span>
+        <span>开发团队: SEU </span>
       </div>
     </div>
 
@@ -136,13 +136,17 @@ export default {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
           this.loading = true
+          console.log(1)
           this.$store
             .dispatch('user/login', this.loginForm)
             .then(() => {
+              console.log(2)
               this.$router.push({ path: this.redirect || '/' })
+              console.log(3)
               this.loading = false
             })
             .catch(() => {
+              console.log('提交有误！')
               this.loading = false
             })
         } else {

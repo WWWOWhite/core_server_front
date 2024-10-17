@@ -102,13 +102,7 @@ export default {
             }
             userApply(updateForm)
               .then(response => {
-                if (response.data.status === 'success') {
-                  this.getData()
-                  this.$message.success('用户资质申请成功！')
-                } else {
-                  this.$message.error('用户资质申请失败！')
-                }
-
+                this.$message.success('用户资质申请成功！')
                 setTimeout(() => {
                   this.drawerReset()
                 }, 200)

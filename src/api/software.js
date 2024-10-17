@@ -15,7 +15,7 @@ export function softwareRegistrationReview(rsoftwareId, isApproved) {
 
 export function softwareRegister(registerInfo) {
   return request({
-    url: `${MODULE_BASE_URL}/software-register/`,
+    url: `${MODULE_BASE_URL}/registsoftware-add/`,
     method: 'post',
     data: registerInfo
   })
@@ -23,7 +23,7 @@ export function softwareRegister(registerInfo) {
 
 export function RegisteredSoftwareQuery(params) {
   return request({
-    url: `${MODULE_BASE_URL}/registered-software-query-all`,
+    url: `${MODULE_BASE_URL}/registsoftware-query-all/`,
     method: 'post',
     data: params
   })
@@ -31,7 +31,7 @@ export function RegisteredSoftwareQuery(params) {
 
 export function softwareQuery(params) {
   return request({
-    url: `${MODULE_BASE_URL}/software-query-all`,
+    url: `${MODULE_BASE_URL}/software-query-all/`,
     method: 'post',
     data: params
   })
@@ -42,5 +42,15 @@ export function softwareUpdate(editedSoftware) {
     url: `${MODULE_BASE_URL}/update-software/`,
     method: 'post',
     data: editedSoftware
+  })
+}
+
+export function softwarDelete(softwarId) {
+  return request({
+    url: `${MODULE_BASE_URL}/software-delete/`,
+    method: 'post',
+    data: {
+      software_id: softwarId
+    }
   })
 }
