@@ -1,11 +1,22 @@
-<!-- cmd -->
+# 中心服务器后端页面
+
+## 环境
+* npm：8.19.4
+* Node.js：16.20.0 LTS
+
+## 配置 
+.env.development文件中指定后端接口地址 
+
+```shell
+VUE_APP_BASE_API = 'http://localhost:8000'
+```
+
+## 启动 
+
+```shell
+# 第一次运行install安装环境 
 npm install
+
+# 启动程序
 npm run dev
-
-<!-- 联调时在.env.development修改后端IP地址，例如： -->
-VUE_APP_BASE_API = 'http://localhost:8000'
-
-<!-- 发布时在.env.production修改部署时的IP地址，例如： -->
-npm run build:prod
-
-VUE_APP_BASE_API = 'http://localhost:8000'
+```

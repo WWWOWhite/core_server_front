@@ -17,8 +17,6 @@ export function nodeLoadConfig(params) {
   })
 }
 
-
-
 export function nodeQuery(params) {
   return request({
     url: `${MODULE_BASE_URL}/node-query-all/`,
@@ -35,6 +33,16 @@ export function nodeUpdate(editedNode) {
   })
 }
 
+export function nodeDelete(params){
+	return request({
+	  url: `${MODULE_BASE_URL}/node-delete/`,
+	  method: 'post',
+	  data: params
+	})
+}
+
+
+
 
 export function logQuery(params) {
   return request({
@@ -43,3 +51,24 @@ export function logQuery(params) {
     data: params
   })
 }
+
+
+
+
+export function addWhite(params) {
+  return request({
+    url: `${MODULE_BASE_URL}/add-white/`,
+    method: 'post',
+    data: params
+  })
+}
+
+export function delWhite(params) {
+  return request({
+    url: `${MODULE_BASE_URL}/del-white/`,
+    method: 'post',
+    data: params
+  })
+}
+
+

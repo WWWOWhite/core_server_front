@@ -2,17 +2,31 @@
 	<div>
 		<div class="app-container">
 			<el-row>
-				<!-- <el-button type="primary" @click="openDialog">增加节点</el-button> -->
+				<el-button type="primary" @click="openDialog">增加节点</el-button>
 				<el-button type="primary" @click="openImportConfigDialog">导入配置</el-button>
 			</el-row>
 			<!-- 弹出的对话框 -->
 			<el-dialog title="新增节点" :visible.sync="dialogVisible" width="30%" @close="handleDialogClose">
-				<el-form :model="form">
-					<el-form-item label="IP地址">
+				<el-form :model="form" ref="formRef">
+					<el-form-item label="IP地址" prop="ipAddress" :rules="ipAddressRules">
 						<el-input v-model="form.ipAddress" placeholder="请输入IP地址"></el-input>
 					</el-form-item>
 					<el-form-item label="端口号">
 						<el-input v-model="form.ipPort" placeholder="请输入端口号"></el-input>
+					</el-form-item>
+					<el-form-item label="可订阅主题">
+						<div v-for="(sub, index) in form.subNodes" :key="index">
+							<el-input v-model="form.subNodes[index]" placeholder="请输入可订阅主题"></el-input>
+							<el-button size="mini" type="danger" @click="removeSubNode(index)">删除</el-button>
+						</div>
+						<el-button size="mini" type="primary" @click="addSubNode">添加可订阅主题</el-button>
+					</el-form-item>
+					<el-form-item label="可发布主题">
+						<div v-for="(pub, index) in form.pubNodes" :key="index">
+							<el-input v-model="form.pubNodes[index]" placeholder="请输入发布主题"></el-input>
+							<el-button size="mini" type="danger" @click="removePubNode(index)">删除</el-button>
+						</div>
+						<el-button size="mini" type="primary" @click="addPubNode">添加可发布主题</el-button>
 					</el-form-item>
 				</el-form>
 
@@ -39,71 +53,66 @@
 
 		<el-table v-loading="listLoading" :data="list" element-loading-text="Loading" border fit highlight-current-row>
 			<el-table-column align="center" prop="id" width="50" label="序号" />
-			<!-- 			<el-table-column align="center" label="节点ID" width="130">
-				<template slot-scope="scope">{{ scope.row.node_id }}</template>
-			</el-table-column> -->
 			<el-table-column label="节点IP地址" width="130" align="center">
 				<template slot-scope="scope">
 					<span>{{ scope.row.node_ip }}</span>
 				</template>
 			</el-table-column>
-			<!-- 			<el-table-column align="center" label="节点描述">
-				<template slot-scope="scope">{{ scope.row.node_desc }}</template>
-			</el-table-column> -->
-			<el-table-column align="center" label="可订阅节点">
-				<!-- <template slot-scope="scope">{{ scope.row.node_sub }}</template> -->
+			<el-table-column align="center" label="可订阅主题">
 				<template slot-scope="scope">
-					<ul v-if="scope.row.node_sub" class="custom-list">
-						<li v-for="(sub, index) in scope.row.node_sub.split(',').filter(s => s.trim() !== '')"
-							:key="index">
+					<ul v-if="scope.row.node_sub && scope.row.node_sub.length" class="custom-list">
+						<li v-for="(sub, index) in scope.row.node_sub" :key="index">
 							{{ sub }}
 						</li>
 					</ul>
-					<span v-else>无数据</span>
-				</template>
-			</el-table-column>
-			<el-table-column align="center" label="可发布节点">
-				<!-- <template slot-scope="scope">{{ scope.row.node_pub }}</template> -->
-				<template slot-scope="scope">
-					<ul v-if="scope.row.node_pub" class="custom-list">
-						<li v-for="(pub, index) in scope.row.node_pub.split(',').filter(p => p.trim() !== '')"
-							:key="index">
-							{{ pub }}
-						</li>
-					</ul>
-					<span v-else>无数据</span>
-				</template>
-			</el-table-column>
-			<el-table-column align="center" label="guid 白名单">
-				<template slot-scope="scope">
-					<ul v-if="scope.row.white_guid" class="custom-list">
-						<li v-for="(guid, index) in scope.row.white_guid.split(',').filter(g => g.trim() !== '')"
-							:key="index">
-							{{ guid }}
-						</li>
-					</ul>
-					<span v-else></span> <!-- 当 white_guid 为空时显示的内容 -->
+					<span v-else>无</span>
 				</template>
 			</el-table-column>
 
+			<el-table-column align="center" label="可发布主题">
+				<template slot-scope="scope">
+					<ul v-if="scope.row.node_pub && scope.row.node_pub.length" class="custom-list">
+						<li v-for="(pub, index) in scope.row.node_pub" :key="index">
+							{{ pub }}
+						</li>
+					</ul>
+					<span v-else>无</span>
+				</template>
+			</el-table-column>
+
+<!-- 			<el-table-column align="center" label="guid 白名单">
+				<template slot-scope="scope">
+					<ul v-if="scope.row.white_guid && scope.row.white_guid.length" class="custom-list">
+						<li v-for="(guid, index) in scope.row.white_guid" :key="index">
+							{{ guid }}
+						</li>
+					</ul>
+					<span v-else>无</span> <!-- 当 white_guid 为空时显示的内容 -->
+<!-- 				</template>
+			</el-table-column> --> -->
+			<el-table-column align="center" label="本地载入 白名单">
+				<template slot-scope="scope">
+					<ul v-if="scope.row.node_local_white && scope.row.node_local_white.length" class="custom-list">
+						<li v-for="(guid, index) in scope.row.node_local_white" :key="index">
+							{{ guid }}
+						</li>
+					</ul>
+					<span v-else>无</span> <!-- 当 white_guid 为空时显示的内容 -->
+				</template>
+			</el-table-column>
 			<el-table-column align="center" prop="created_time" label="创建时间">
 				<template slot-scope="scope">
 					<i class="el-icon-time" />
 					<span>{{ formatDate(scope.row.create_time) }}</span>
 				</template>
 			</el-table-column>
-<!-- 			<el-table-column align="center" prop="update_time" label="更新时间">
+			<!-- 			<el-table-column align="center" prop="update_time" label="更新时间">
 				<template slot-scope="scope">
 					<i class="el-icon-time" />
 					<span>{{ formatDate(scope.row.update_time) }}</span>
 				</template>
 			</el-table-column> -->
-			<!-- 			<el-table-column align="center" fixed="right" label="操作" width="150">
-				<template slot-scope="scope">
-					<el-button type="primary" icon="el-icon-edit" circle @click="handleEdit(scope.row)" />
-				</template>
-			</el-table-column> -->
-			<el-table-column align="center" fixed="right" label="下发状态">
+			<el-table-column align="center" fixed="right" label="在线状态">
 				<template slot-scope="scope">
 					<!-- 绿点，当 node_is_alive > 0 时显示 -->
 					<span v-if="scope.row.node_is_alive > 0" class="status-dot status-alive"></span>
@@ -112,9 +121,12 @@
 					<span v-else class="status-dot status-dead"></span>
 				</template>
 			</el-table-column>
-			<el-table-column align="center" fixed="right" label="配置同步" width="100">
+			<el-table-column align="center" fixed="right" label="本地白名单操作" width="150">
 				<template slot-scope="scope">
-					<el-button type="primary" icon="el-icon-upload" circle @click="handleEdit(scope.row)" />
+					<el-button type="primary" icon="el-icon-setting" size="small"
+						@click="openLocalWhiteListDialog(scope.row)">
+						管理白名单
+					</el-button>
 				</template>
 			</el-table-column>
 
@@ -123,7 +135,77 @@
 					<el-button type="text" @click="openLogDialog(scope.row)">查看日志</el-button>
 				</template>
 			</el-table-column>
+
+			<!-- 操作 -->
+			<el-table-column align="center" fixed="right" label="操作" width="150">
+				<template slot-scope="scope">
+					<div class="button-container">
+						<el-button type="primary" icon="el-icon-edit" size="small"
+							@click="handleUpdate(scope.row)">更新</el-button>
+					</div>
+					<div class="button-container">
+						<el-button type="danger" icon="el-icon-delete" size="small"
+							@click="handleDelete(scope.row)">删除</el-button>
+					</div>
+				</template>
+			</el-table-column>
 		</el-table>
+
+		<el-dialog :visible.sync="whiteListDialogVisible" title="本地白名单管理">
+			<div v-if="currentRow">
+				<el-table :data="currentRow.node_local_white" border>
+					<el-table-column label="白名单">
+						<template slot-scope="scope">
+							{{ scope.row }}
+						</template>
+					</el-table-column>
+					<el-table-column label="操作" width="120">
+						<template slot-scope="scope">
+							<el-button type="danger" size="small"
+								@click="handleUninstall(scope.row,currentRow.node_ip)">卸载</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+
+				<!-- 新增白名单 -->
+				<el-input v-model="newWhiteList" placeholder="请输入白名单" class="mt-10" />
+				<el-button type="primary" @click="handleAddWhiteList(currentRow.node_ip)">新增白名单</el-button>
+			</div>
+		</el-dialog>
+
+
+
+		<!-- 更新对话框 -->
+		<el-dialog title="更新节点" :visible.sync="updateDialogVisible" width="30%">
+			<el-form :model="updateForm">
+				<el-form-item label="节点IP地址">
+					<el-input v-model="updateForm.node_ip" readonly></el-input>
+				</el-form-item>
+
+				<!-- 可订阅主题 -->
+				<el-form-item label="可订阅主题">
+					<div v-for="(sub, index) in updateForm.subNodes" :key="index">
+						<el-input v-model="updateForm.subNodes[index]" placeholder="请输入可订阅主题"></el-input>
+						<el-button size="mini" type="danger" @click="updateremoveSubNode(index)">删除</el-button>
+					</div>
+					<el-button size="mini" type="primary" @click="updateaddSubNode">添加可订阅主题</el-button>
+				</el-form-item>
+
+				<!-- 可发布主题 -->
+				<el-form-item label="可发布主题">
+					<div v-for="(pub, index) in updateForm.pubNodes" :key="index">
+						<el-input v-model="updateForm.pubNodes[index]" placeholder="请输入可发布主题"></el-input>
+						<el-button size="mini" type="danger" @click="updateremovePubNode(index)">删除</el-button>
+					</div>
+					<el-button size="mini" type="primary" @click="updateaddPubNode">添加可发布主题</el-button>
+				</el-form-item>
+			</el-form>
+
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="updateDialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="handleUpdateSubmit">提 交</el-button>
+			</span>
+		</el-dialog>
 
 		<el-dialog title="日志详情" :visible.sync="logDialogVisible" width="50%" @close="handleLogDialogClose">
 			<el-table :data="logList" border fit>
@@ -182,6 +264,9 @@
 		nodeAdd,
 		nodeLoadConfig,
 		logQuery,
+		nodeDelete,
+		addWhite,
+		delWhite,
 	} from '@/api/node'
 
 	export default {
@@ -202,15 +287,38 @@
 				dialogVisible: false, // 控制对话框是否可见
 				form: {
 					ipAddress: '', // 绑定的IP地址
-					ipPort: 0,
+					ipPort: 8890,
 					decription: '描述信息',
+					subNodes: [], // 存储可订阅节点的数组
+					pubNodes: [] // 存储可发布节点的数组
 				},
 				importConfigDialogVisible: false, // 控制“导入配置”对话框的显示
 				jsonContent: '', // 导入配置中的JSON内容
 				currentLogPage: 1, // 当前日志页码
 				logList: [], // 存储日志列表
 				totalLogCount: 0, // 日志总数
-				currentNodeIp:'',
+				currentNodeIp: '',
+				ipAddressRules: [{
+						required: true,
+						message: 'IP地址不能为空',
+						trigger: 'blur'
+					},
+					{
+						validator: this.validateIP,
+						trigger: 'blur'
+					}
+				],
+				updateDialogVisible: false, // 更新对话框显示状态
+				updateForm: {
+					node_ip: '',
+					subNodes: [''], // 可订阅主题初始化为数组
+					pubNodes: [''], // 可发布主题初始化为数组
+					whiteNodes: [''], // GUID 白名单初始化为数组
+				},
+				whiteListDialogVisible: false, // 弹窗是否可见
+				currentRow: null, // 当前选择的行
+				newWhiteList: '', // 输入的新白名单
+
 			}
 		},
 		created() {
@@ -329,24 +437,36 @@
 				this.form.ipAddress = ''; // 清空IP地址
 			},
 			handleSubmit() {
-				const params = {
-					node_ip: this.form.ipAddress,
-					node_port: this.form.ipPort,
-					node_desc: this.form.decription,
-				}
-				nodeAdd(params).then((response) => {
-					if (response.status === 'success') {
-						this.getData()
-						this.$message.success('添加节点信息成功！')
+				this.$refs.formRef.validate((valid) => {
+					if (valid) {
+						const params = {
+							node_ip: this.form.ipAddress,
+							node_port: this.form.ipPort,
+							node_desc: this.form.decription,
+							node_pub: this.form.pubNodes,
+							node_sub: this.form.subNodes,
+						}
+						nodeAdd(params).then((response) => {
+							if (response.status === 'success') {
+								this.getData()
+								this.$message.success('添加节点信息成功！')
+							} else {
+								this.$message.error('服务器处理出错，增加节点信息失败！')
+							}
+							setTimeout(() => {
+								this.dialogVisible = false;
+							}, 200)
+						}).catch((err) => {
+							console.error(err)
+						})
+						console.log(this.form);
 					} else {
-						this.$message.error('服务器处理出错，增加节点信息失败！')
+						console.log('校验失败!');
+						return false;
 					}
-					setTimeout(() => {
-						this.dialogVisible = false;
-					}, 200)
-				}).catch((err) => {
-					console.error(err)
-				})
+				});
+
+
 				// if (this.form.ipAddress) {
 				//   // 提交数据的逻辑，比如调用API保存IP地址
 				//   this.$message.success('提交成功，IP地址为：' + this.form.ipAddress);
@@ -416,7 +536,7 @@
 				const params = {
 					page: this.currentLogPage,
 					limit: this.pageSize,
-					ip :nodeIp,
+					ip: nodeIp,
 				}
 				logQuery(params).then((response) => {
 					this.logList = response.message.data
@@ -430,7 +550,155 @@
 				// 重新加载日志数据
 				this.fetchLogs(this.currentNodeIp); // 确保你保存了当前节点的IP
 			},
+			addSubNode() {
+				this.form.subNodes.push(''); // 添加一个新的空字符串代表一个新节点
+			},
+			removeSubNode(index) {
+				this.form.subNodes.splice(index, 1); // 删除指定索引的订阅节点
+			},
+			addPubNode() {
+				this.form.pubNodes.push(''); // 添加一个新的空字符串代表一个新节点
+			},
+			removePubNode(index) {
+				this.form.pubNodes.splice(index, 1); // 删除指定索引的发布节点
+			},
+			validateIP(rule, value, callback) {
+				const ipRegex =
+					/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+				if (!value) {
+					return callback(new Error('IP地址不能为空'));
+				}
+				if (!ipRegex.test(value)) {
+					return callback(new Error('请输入有效的IP地址'));
+				}
+				console.log('校验成功');
+				callback(); // 校验通过
+			},
+			handleUpdate(row) {
+				// 将当前行数据填充到更新表单
+				this.updateForm.node_ip = row.node_ip;
+				this.updateForm.subNodes = [...row.node_sub]; // 复制订阅主题
+				this.updateForm.pubNodes = [...row.node_pub]; // 复制发布主题
+				this.updateForm.whiteNodes = [...row.white_guid]; // 复制 GUID 白名单
+				this.updateDialogVisible = true; // 显示对话框
+			},
 
+			handleUpdateSubmit() {
+				// 处理更新逻辑，发送请求到后端
+				console.log(this.updateForm);
+				const params = {
+					"node_ip": this.updateForm.node_ip,
+					"node_pub": this.updateForm.pubNodes,
+					"node_sub": this.updateForm.subNodes
+				}
+				nodeUpdate(params).then((response) => {
+					if (response.status === 'success') {
+						this.getData()
+						this.$message.success('更新节点信息成功！')
+					} else {
+						this.$message.error('服务器处理出错，更新节点信息失败！')
+					}
+					setTimeout(() => {
+						this.dialogVisible = false;
+					}, 200)
+				}).catch((err) => {
+					console.error(err)
+				})
+				// 此处添加更新请求逻辑
+				this.updateDialogVisible = false; // 关闭对话框
+			},
+			updateaddSubNode() {
+				this.updateForm.subNodes.push(''); // 添加新可订阅主题输入框
+			},
+			updateremoveSubNode(index) {
+				this.updateForm.subNodes.splice(index, 1); // 删除对应的可订阅主题
+			},
+			updateaddPubNode() {
+				this.updateForm.pubNodes.push(''); // 添加新可发布主题输入框
+			},
+			updateremovePubNode(index) {
+				this.updateForm.pubNodes.splice(index, 1); // 删除对应的可发布主题
+			},
+			handleDelete(row) {
+				// 处理删除逻辑，例如确认删除并从数据列表中移除该行
+				const params = {
+					'node_ip': row.node_ip
+				}
+				nodeDelete(params).then((response) => {
+					if (response.status === 'success') {
+						this.getData()
+						this.$message.success('删除节点信息成功！')
+					} else {
+						this.$message.error('服务器处理出错，删除节点信息失败！')
+					}
+					setTimeout(() => {
+						this.dialogVisible = false;
+					}, 200)
+				}).catch((err) => {
+					console.error(err)
+				})
+				console.log('Deleting row:', row);
+			},
+
+			// 打开本地白名单弹窗
+			openLocalWhiteListDialog(row) {
+				this.currentRow = row;
+				this.whiteListDialogVisible = true;
+			},
+			// 卸载白名单
+			handleUninstall(guid, nodeIp) {
+				// 调用卸载接口
+				const params = {
+					'guid': guid,
+					'node_ip': nodeIp
+				}
+				delWhite(params).then((response) => {
+					if (response.status === 'success') {
+						this.$message.success(`白名单 ${guid} 已成功卸载`);
+						// 卸载成功后，从本地列表中移除
+						const index = this.currentRow.node_local_white.indexOf(guid);
+						if (index !== -1) {
+							this.currentRow.node_local_white.splice(index, 1);
+						}
+					} else {
+						this.$message.error('服务器处理出错，白名单卸载失败！')
+					}
+					setTimeout(() => {
+						this.dialogVisible = false;
+					}, 200)
+				}).catch((err) => {
+					console.error(err)
+				})
+
+			},
+			// 新增白名单
+			handleAddWhiteList(nodeIp) {
+				if (!this.newWhiteList) {
+					this.$message.warning('请输入白名单内容');
+					return;
+				}
+				// 调用新增白名单接口
+				const params = {
+					'node_ip': nodeIp,
+					'guid':this.newWhiteList
+				}
+				addWhite(params).then((response) => {
+					if (response.status === 'success') {
+						this.$message.success(`白名单 ${this.newWhiteList} 已成功新增`);
+						// 新增成功后，将新白名单添加到列表中
+						this.currentRow.node_local_white.push(this.newWhiteList);
+						this.newWhiteList = ''; // 清空输入框
+					} else {
+						this.$message.error('服务器处理出错，白名单新增失败！')
+					}
+					setTimeout(() => {
+						this.dialogVisible = false;
+					}, 200)
+				}).catch((err) => {
+					console.error(err)
+				})
+
+			},
 		}
 	}
 </script>
@@ -502,5 +770,11 @@
 		/* 改为行内显示 */
 		margin-right: 5px;
 		/* 调整每个 GUID 的右边距 */
+	}
+
+	.button-container {
+		display: inline-block;
+		margin-right: 5px;
+		/* 可根据需要调整间距 */
 	}
 </style>
