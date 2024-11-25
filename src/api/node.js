@@ -72,3 +72,10 @@ export function delWhite(params) {
 }
 
 
+export function deleteAllWhite(params){
+  return request({
+    url: `${MODULE_BASE_URL}/del-all-white/`,
+    method: 'post',
+    data: params
+  })
+}
